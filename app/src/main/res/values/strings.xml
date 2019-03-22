@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Fishing App</string>
+    <string name="Activity_1">Welcome to fishing App</string>
+    <string name="Activity_2">General Status</string>
+    <string name="Activity_3">Location Status</string>
+    <string name="button_1">Open Current Location</string>
+    <string name="Button_2">Open General Status</string>
+    <string name="button_return1">Go Back to Main</string>
+    <string name="button_return2">Go Back to Main</string>
+    <string name="title_activity_select_device">SelectDeviceActivity</string>
+
+</resources>

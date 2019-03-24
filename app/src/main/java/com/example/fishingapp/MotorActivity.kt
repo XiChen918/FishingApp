@@ -16,4 +16,8 @@ class MotorActivity : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java)
         finish()
     }
+    fun goActivityBluetooth(view: View) {
+        val intent = Intent(this, SelectDeviceActivity::class.java)
+        startActivity(intent)
+    }
 }

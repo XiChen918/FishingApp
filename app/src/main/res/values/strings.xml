@@ -8,5 +8,6 @@
     <string name="button_return1">Go Back to Main</string>
     <string name="button_return2">Go Back to Main</string>
     <string name="title_activity_select_device">SelectDeviceActivity</string>
-
+    <string name="return_Motor">Back to Motor Activity</string>
+    <string name="bluetooth_Select">Select Bluetooth Device</string>
 </resources>

@@ -10,4 +10,10 @@
     <string name="title_activity_select_device">SelectDeviceActivity</string>
     <string name="return_Motor">Back to Motor Activity</string>
     <string name="bluetooth_Select">Select Bluetooth Device</string>
+
+    <string name="refresh">Refresh Bluetooth Device</string>
+
+    <string name="on">On</string>
+    <string name="off">Off </string>
+    <string name="disconnect">Disconnect</string>
 </resources>

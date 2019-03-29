@@ -9,8 +9,13 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
+import android.text.Editable
 import android.util.Log
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import kotlinx.android.synthetic.main.control_layout.*
+import org.jetbrains.anko.toast
 import java.io.IOException
 import java.util.*
 
@@ -25,6 +30,7 @@ class ControlActivity: AppCompatActivity() {
         lateinit var myBluetoothAdapter: BluetoothAdapter
         var myIsConnected: Boolean = false
         lateinit var myAddress: String
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,19 +39,32 @@ class ControlActivity: AppCompatActivity() {
         myAddress = intent.getStringExtra(SelectDeviceActivity.EXTRA_ADDRESS)
 
         ConnectToDevice(this).execute()
-
-        //Test
-        control_on.setOnClickListener{
-            sendCommand("a")
+        val btnShow = findViewById<Button>(R.id.btnShow)
+        var inputRPM: String
+        //Read in value and store it as String
+        btnShow.setOnClickListener{
+            inputRPM = receiveInput()
+            sendCommand(inputRPM)
         }
-
+        //Test
+        //Send data to Microcontroller
+        /*btnShow.setOnClickListener{
+            sendCommand(inputRPM)
+        }*/
+        /*
         control_off.setOnClickListener{
             sendCommand("b")
-        }
+        }*/
 
         control_disconnect.setOnClickListener{
             disconnect()
         }
+    }
+
+    private fun receiveInput(): String {
+        val input = findViewById<EditText>(R.id.editText)
+        println(input)
+        return input.text.toString()
     }
 
     private fun sendCommand(input: String) {

@@ -30,14 +30,12 @@
             android:layout_marginBottom="110dp"
     />
 
-    <Button app:layout_constraintHorizontal_bias="0.137"
+    <Button
             android:id="@+id/select_device_refresh"
             android:layout_width="362dp"
             android:layout_height="56dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginLeft="20dp"
-            android:layout_marginStart="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="56dp"
             android:text="@string/refresh"

@@ -20,4 +20,5 @@
     <string name="sendValue">Send RPM</string>
     <string name="hint_enter_something">Enter integer only</string>
 
+    <string name="currentRPMValue">Current RPM Value: </string>
 </resources>

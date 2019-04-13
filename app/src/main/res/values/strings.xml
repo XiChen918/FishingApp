@@ -21,4 +21,6 @@
     <string name="hint_enter_something">Enter integer only</string>
 
     <string name="currentRPMValue">Current RPM Value: </string>
+    <string name="stop">Stop Retraction</string>
+    <string name="RPMrefresh">Manually Refresh</string>
 </resources>

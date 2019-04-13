@@ -8,15 +8,20 @@ import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.control_layout.*
+import kotlinx.android.synthetic.main.control_layout.view.*
 import org.jetbrains.anko.toast
+import java.io.ByteArrayInputStream
 import java.io.IOException
+import java.io.InputStream
 import java.util.*
 
 
@@ -30,7 +35,7 @@ class ControlActivity: AppCompatActivity() {
         lateinit var myBluetoothAdapter: BluetoothAdapter
         var myIsConnected: Boolean = false
         lateinit var myAddress: String
-
+        val mmInStream: InputStream? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,24 +51,27 @@ class ControlActivity: AppCompatActivity() {
             inputRPM = receiveInput()
             sendCommand(inputRPM)
         }
-        //Test
-        //Send data to Microcontroller
-        /*btnShow.setOnClickListener{
-            sendCommand(inputRPM)
-        }*/
-        /*
-        control_off.setOnClickListener{
-            sendCommand("b")
-        }*/
 
+        //Read RPM from microcontroller (bluetooth)
+        btnRefresh.setOnClickListener {
+            val showCountTextView = findViewById<TextView>(R.id.textView)
+            showCountTextView.text = receiveBluetooth()
+        }
+
+        //Stop Retraction process
+        val btnStop = findViewById<Button>(R.id.btnStop)
+        btnStop.setOnClickListener{
+            sendCommand("Stop")
+        }
         control_disconnect.setOnClickListener{
             disconnect()
         }
     }
 
+
+
     private fun receiveInput(): String {
         val input = findViewById<EditText>(R.id.editText)
-        println(input)
         return input.text.toString()
     }
 
@@ -76,6 +84,20 @@ class ControlActivity: AppCompatActivity() {
             }
         }
     }
+
+    private fun receiveBluetooth(): String {
+        var realRPM: String = ""
+        if (myBluetoothSocket != null) {
+            try {
+                realRPM = myBluetoothSocket!!.inputStream.readBytes().toString()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+        return realRPM
+
+    }
+
 
     private fun disconnect() {
         if (myBluetoothSocket != null) {

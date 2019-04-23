@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Fishing App</string>
+    <string name="app_name">Fishy Tech</string>
     <string name="Activity_1">Welcome to fishing App</string>
     <string name="Activity_2">General Status</string>
     <string name="Activity_3">Location Status</string>
@@ -23,4 +23,8 @@
     <string name="currentRPMValue">Current RPM Value: </string>
     <string name="stop">Stop Retraction</string>
     <string name="RPMrefresh">Manually Refresh</string>
+
+    <string name="currentLocation">+</string>
+
+    <string name="startRetraction">Start Retraction Directly</string>
 </resources>

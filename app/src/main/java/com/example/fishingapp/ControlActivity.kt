@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
+import android.os.Handler
 import android.os.PersistableBundle
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AppCompatActivity
@@ -18,15 +19,17 @@ import android.widget.TextView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.control_layout.*
 import kotlinx.android.synthetic.main.control_layout.view.*
+import kotlinx.android.synthetic.main.select_device_layout.*
 import org.jetbrains.anko.toast
 import java.io.ByteArrayInputStream
+import java.io.DataInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.util.*
+import kotlin.concurrent.schedule
 
 
 class ControlActivity: AppCompatActivity() {
-
     //Needs be checked
     companion object {
         val myUUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
@@ -37,6 +40,7 @@ class ControlActivity: AppCompatActivity() {
         lateinit var myAddress: String
         val mmInStream: InputStream? = null
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,17 +56,74 @@ class ControlActivity: AppCompatActivity() {
             sendCommand(inputRPM)
         }
 
+
         //Read RPM from microcontroller (bluetooth)
+
+        val showCountTextView = findViewById<TextView>(R.id.textView)
+
+        //val mHandler:Handler = Handler()
+        /*
+        mHandler.postDelayed({
+            receiveBluetooth(showCountTextView)
+        }, 1000)
+        */
+
+        /*Timer().schedule(1000){
+            receiveBluetooth(showCountTextView)
+            // do something after 1 second
+        }*/
+
+        val btnRefresh = findViewById<Button>(R.id.btnRefresh)
         btnRefresh.setOnClickListener {
-            val showCountTextView = findViewById<TextView>(R.id.textView)
-            showCountTextView.text = receiveBluetooth()
+            receiveBluetooth(showCountTextView)
         }
+        //Try to automatically refresh
+
+
+        /*
+        handler.postDelayed({
+            receiveBluetooth(showCountTextView)
+        }, 2000)
+        */
+
+
+        //val handler:Handler = Handler()
+        /*
+        val thread = object : Thread() {
+            override fun run() {
+                try {
+                    while (!this.isInterrupted) {
+                        Thread.sleep(2000)
+                        runOnUiThread {
+                            receiveBluetooth(showCountTextView)
+                        }
+                    }
+                } catch (e: InterruptedException) {
+                }
+
+            }
+        }
+
+        thread.start()
+        */
+
+        //btnRefresh.setOnClickListener {
+        //thread.start()
+        //}
 
         //Stop Retraction process
         val btnStop = findViewById<Button>(R.id.btnStop)
         btnStop.setOnClickListener{
-            sendCommand("Stop")
+            sendCommand("0")
         }
+
+        //Start Retraction Process directly
+
+        val btnStart = findViewById<Button>(R.id.btnStart)
+        btnStart.setOnClickListener{
+            sendCommand("1")
+        }
+
         control_disconnect.setOnClickListener{
             disconnect()
         }
@@ -85,16 +146,23 @@ class ControlActivity: AppCompatActivity() {
         }
     }
 
-    private fun receiveBluetooth(): String {
-        var realRPM: String = ""
+    private fun receiveBluetooth(input: TextView) {
+        val buffer = ByteArray(256)
+        val bytes:Int
+        var tmpIn: InputStream? = null
         if (myBluetoothSocket != null) {
             try {
-                realRPM = myBluetoothSocket!!.inputStream.readBytes().toString()
-            } catch (e: IOException) {
+                tmpIn = myBluetoothSocket!!.inputStream
+                val mmInStream = DataInputStream(tmpIn)
+                bytes = mmInStream.read(buffer)
+                val readMessage = String(buffer, 0, bytes)
+                input.text=""
+                input.text = readMessage
+            } catch (e:IOException) {
                 e.printStackTrace()
             }
         }
-        return realRPM
+
 
     }
 
@@ -111,6 +179,7 @@ class ControlActivity: AppCompatActivity() {
         }
         finish()
     }
+
     private class ConnectToDevice(c: Context) : AsyncTask<Void, Void, String> () {
         private var connectSuccess: Boolean = true
         private val context: Context

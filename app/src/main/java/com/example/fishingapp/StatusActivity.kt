@@ -1,5 +1,6 @@
 package com.example.fishingapp
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
@@ -15,19 +16,22 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import org.osmdroid.util.GeoPoint
-
-
-
-
-
+import android.location.Criteria
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import kotlinx.android.synthetic.main.activity_status.*
+import org.osmdroid.util.LocationUtils.getLastKnownLocation
+import java.io.IOException
 
 
 class StatusActivity : AppCompatActivity() {
     var map: MapView? = null
+
 
     //Map ends in here
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,15 +50,69 @@ class StatusActivity : AppCompatActivity() {
         map.setBuiltInZoomControls(true)
         map.setMultiTouchControls(true)
         val mapController = map.getController()
-        mapController.setZoom(9.5)
-        val startPoint = GeoPoint(48.8583, 2.2944)
+        mapController.setZoom(18)
+
+        var startPoint = GeoPoint(40.4286, -86.91)
+
         mapController.setCenter(startPoint)
-        val locationManager = getSystemService(Context.LOCATION_SERVICE)
-        //val lastLocation = locationManager.getLastKnownLocation()
-        //Initialize Location
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+
+        //User Location display
+
+        val myLocationoverlay = MyLocationNewOverlay(map)
+        myLocationoverlay.enableFollowLocation()
+        myLocationoverlay.enableMyLocation()
+        map.getOverlays().add(myLocationoverlay)
+
+        //Find user's location with button click
+        currentLocation.setOnClickListener{
+            startPoint = manuallyGetLocation(locationManager)
+            mapController.setCenter(startPoint)
+        }
 
     }
 
+    //Needs check
+    private fun manuallyGetLocation(input:LocationManager): GeoPoint {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION )!= PackageManager.PERMISSION_GRANTED) {
+            try {
+                val locationGPS = input.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                val longitude = locationGPS.getLongitude()
+                val latitude = locationGPS.getLatitude()
+                val startPoint = GeoPoint(longitude, latitude)
+                //mapController.setCenter(startPoint)
+                return startPoint
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+
+        }
+        return GeoPoint(40.428, -86.912)
+    }
+
+/*
+    private fun getLastBestLocation(input: LocationManager): Location {
+        val locationGPS = input.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        val locationNet = input.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        var GPSLocationTime: Long = 0
+        if (null != locationGPS) {
+            GPSLocationTime = locationGPS!!.getTime()
+        }
+
+        var NetLocationTime: Long = 0
+
+        if (null != locationNet) {
+            NetLocationTime = locationNet!!.getTime()
+        }
+
+        return if (0 < GPSLocationTime - NetLocationTime) {
+            locationGPS
+        } else {
+            locationNet
+        }
+    }
+*/
     public override fun onResume() {
         super.onResume()
         //this will refresh the osmdroid configuration on resuming.

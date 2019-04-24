@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit
 import kotlin.concurrent.schedule
 
 
-
 class ControlActivity: AppCompatActivity() {
     //Needs be checked
     companion object {
@@ -42,10 +41,38 @@ class ControlActivity: AppCompatActivity() {
         var myIsConnected: Boolean = false
         lateinit var myAddress: String
         val mmInStream: InputStream? = null
-        private val mInterval:Long = 2000 // 5 seconds by default, can be changed later
+        private val mInterval:Long = 5000 // 5 seconds by default, can be changed later
         private var mHandler: Handler? = null
     }
 
+
+    private inner class MyTask : AsyncTask<String, Void, String>() {
+
+        override fun doInBackground(vararg params: String): String {
+            val buffer = ByteArray(256)
+            val bytes:Int
+            var tmpIn: InputStream? = null
+            if (myBluetoothSocket != null) {
+                try {
+                    tmpIn = myBluetoothSocket!!.inputStream
+                    val mmInStream = DataInputStream(tmpIn)
+                    bytes = mmInStream.read(buffer)
+                    val readMessage = String(buffer, 0, bytes)
+                    //input.text=""
+                    //input.text = readMessage
+                    return readMessage
+                } catch (e:IOException) {
+                    e.printStackTrace()
+                }
+            }
+            return "Nothing"
+        }
+
+        override fun onPostExecute(result: String) {
+            val showCountTextView = findViewById<TextView>(R.id.textView)
+            showCountTextView.text = result
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -146,8 +173,11 @@ class ControlActivity: AppCompatActivity() {
     var mStatusChecker: Runnable = object : Runnable {
         override fun run() {
             try {
+                /*
                 val showCountTextView = findViewById<TextView>(R.id.textView)
                 receiveBluetooth(showCountTextView) //this function can change value of mInterval.
+                */
+                MyTask().execute()
             } finally {
                 // 100% guarantee that this always happens, even if
                 // your update method throws an exception
@@ -157,7 +187,6 @@ class ControlActivity: AppCompatActivity() {
     }
 
     fun startRepeatingTask() {
-        //before
         mStatusChecker.run()
     }
 
@@ -179,7 +208,7 @@ class ControlActivity: AppCompatActivity() {
             }
         }
     }
-
+    /*
     private fun receiveBluetooth(input: TextView) {
         val buffer = ByteArray(256)
         val bytes:Int
@@ -196,7 +225,7 @@ class ControlActivity: AppCompatActivity() {
                 e.printStackTrace()
             }
         }
-    }
+    }*/
 
 
     private fun disconnect() {
